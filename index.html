@@ -1,26 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>2026 PRO – Sistema de Inteligencia</title>
+  <link rel="stylesheet" href="css/2026_pro.css">
+</head>
 <body>
-  <div class="app">
 
-    <header class="top-bar">
-      <h1>2026 PRO – Sistema de Inteligencia</h1>
-    </header>
+<div class="app">
 
-    <section class="search-panel">
-      <input type="text" id="searchInput" placeholder="Buscar placa, nombre, ruta...">
-    </section>
+  <h1>2026 PRO – Sistema de Inteligencia</h1>
 
-    <section class="filters">
-      <select id="archivoFilter"></select>
-      <select id="hojaFilter"></select>
-      <input type="date" id="fechaFilter">
-      <select id="tipoFilter"></select>
-    </section>
-
-    <section class="results">
-      <table id="resultsTable"></table>
-    </section>
-
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Buscar placa, nombre, ruta...">
+    <button id="searchBtn">Buscar</button>
   </div>
 
-  <script src="js/2026_pro.js"></script>
+  <div class="filters">
+    <select id="archivoFilter">
+      <option value="">Todos los archivos</option>
+      <option value="2026">2026</option>
+      <option value="REVISIONES_2026">REVISIONES_2026</option>
+    </select>
+
+    <input type="date" id="fechaFilter">
+
+    <select id="tipoFilter">
+      <option value="">Todos los tipos</option>
+      <option value="BUS NUEVO">Bus</option>
+      <option value="TORO NUEVO">Moto</option>
+    </select>
+  </div>
+
+  <table id="resultsTable">
+    <thead>
+      <tr>
+        <th>Archivo</th>
+        <th>Hoja</th>
+        <th>Placa</th>
+        <th>Propietario</th>
+        <th>Ruta</th>
+        <th>Fecha</th>
+        <th>Motivo</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+</div>
+
+<script src="js/2026_pro.js"></script>
 </body>
+</html>
