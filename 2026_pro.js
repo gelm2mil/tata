@@ -14,9 +14,15 @@ const tableBody = document.querySelector("#resultsTable tbody");
 ========================= */
 async function cargarDatos() {
   try {
-    const response = await fetch(API_URL);
-    data = await response.json();
+    const response = await fetch(API_URL + "?v=" + Date.now(), {
+      method: "GET",
+      mode: "cors"
+    });
+
+    const text = await response.text();
+    data = JSON.parse(text);
     renderTable(data);
+
   } catch (error) {
     console.error("Error cargando datos:", error);
     tableBody.innerHTML = `<tr><td colspan="7">Error cargando datos</td></tr>`;
