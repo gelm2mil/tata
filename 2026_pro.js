@@ -1,23 +1,6 @@
-const data = [
-  {
-    archivo: "2026",
-    hoja: "RENOVACION",
-    placa: "C-417BXN",
-    propietario: "San Bernabe",
-    ruta: "Escolar S. Bernabe",
-    fecha: "2025-01-13",
-    motivo: "BUS NUEVO"
-  },
-  {
-    archivo: "REVISIONES_2026",
-    hoja: "CAMBIO",
-    placa: "M-090MY",
-    propietario: "Glenda Guzman",
-    ruta: "Moto Taxi 125",
-    fecha: "2025-02-17",
-    motivo: "TORO NUEVO"
-  }
-];
+const API_URL = "https://script.google.com/macros/s/AKfycbzI7IUbfQe2_xeVvs3uShoMpVJZ3C88_LgM07-3i1bUOl4q-RZzUXpZhJZR8bYOxiPm8g/exec";
+
+let data = [];
 
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
@@ -26,30 +9,58 @@ const fechaFilter = document.getElementById("fechaFilter");
 const tipoFilter = document.getElementById("tipoFilter");
 const tableBody = document.querySelector("#resultsTable tbody");
 
+/* =========================
+   CARGAR DATOS DESDE API
+========================= */
+async function cargarDatos() {
+  try {
+    const response = await fetch(API_URL);
+    data = await response.json();
+    renderTable(data);
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+    tableBody.innerHTML = `<tr><td colspan="7">Error cargando datos</td></tr>`;
+  }
+}
+
+/* =========================
+   RENDERIZAR TABLA
+========================= */
 function renderTable(results) {
   tableBody.innerHTML = "";
 
-  if (results.length === 0) {
+  if (!results || results.length === 0) {
     tableBody.innerHTML = `<tr><td colspan="7">Sin resultados</td></tr>`;
     return;
   }
 
   results.forEach(item => {
+
+    const placa = item["PLACA"] || item["PLACA.E"] || item["Placa"] || "";
+    const propietario = item["PROPIETARIO"] || item["propietario"] || "";
+    const ruta = item["RUTA"] || "";
+    const fecha = item["FECHA"] || "";
+    const motivo = item["MOTIVO"] || "";
+
     const row = `
       <tr>
-        <td>${item.archivo}</td>
-        <td>${item.hoja}</td>
-        <td>${item.placa}</td>
-        <td>${item.propietario}</td>
-        <td>${item.ruta}</td>
-        <td>${item.fecha}</td>
-        <td>${item.motivo}</td>
+        <td>${item.archivo || ""}</td>
+        <td>${item.hoja || ""}</td>
+        <td>${placa}</td>
+        <td>${propietario}</td>
+        <td>${ruta}</td>
+        <td>${fecha}</td>
+        <td>${motivo}</td>
       </tr>
     `;
+
     tableBody.innerHTML += row;
   });
 }
 
+/* =========================
+   BUSCADOR
+========================= */
 function buscar() {
   const texto = searchInput.value.toLowerCase();
   const archivo = archivoFilter.value;
@@ -58,14 +69,20 @@ function buscar() {
 
   const resultados = data.filter(item => {
 
+    const placa = (item["PLACA"] || item["PLACA.E"] || "").toString().toLowerCase();
+    const propietario = (item["PROPIETARIO"] || item["propietario"] || "").toString().toLowerCase();
+    const ruta = (item["RUTA"] || "").toString().toLowerCase();
+    const fechaDato = (item["FECHA"] || "").toString();
+    const motivo = (item["MOTIVO"] || "").toString();
+
     const coincideTexto =
-      item.placa.toLowerCase().includes(texto) ||
-      item.propietario.toLowerCase().includes(texto) ||
-      item.ruta.toLowerCase().includes(texto);
+      placa.includes(texto) ||
+      propietario.includes(texto) ||
+      ruta.includes(texto);
 
     const coincideArchivo = archivo ? item.archivo === archivo : true;
-    const coincideFecha = fecha ? item.fecha === fecha : true;
-    const coincideTipo = tipo ? item.motivo === tipo : true;
+    const coincideFecha = fecha ? fechaDato.includes(fecha) : true;
+    const coincideTipo = tipo ? motivo === tipo : true;
 
     return coincideTexto && coincideArchivo && coincideFecha && coincideTipo;
   });
@@ -73,9 +90,16 @@ function buscar() {
   renderTable(resultados);
 }
 
+/* =========================
+   EVENTOS
+========================= */
 searchBtn.addEventListener("click", buscar);
+
 searchInput.addEventListener("keyup", e => {
   if (e.key === "Enter") buscar();
 });
 
-renderTable(data);
+/* =========================
+   INICIAR SISTEMA
+========================= */
+cargarDatos();
